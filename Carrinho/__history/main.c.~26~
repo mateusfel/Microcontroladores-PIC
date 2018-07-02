@@ -1,0 +1,78 @@
+#include <main.h>
+
+#include <16F876A.h>
+#device ADC=16
+
+#FUSES WDT                      //Watch Dog Timer
+#FUSES NOBROWNOUT               //No brownout reset
+#FUSES NOLVP                    //No low voltage prgming, B3(PIC16) or B5(PIC18) used for I/O
+
+#use delay(crystal=20000000)
+#use FIXED_IO( B_outputs=PIN_B7,PIN_B6,PIN_B5,PIN_B4,PIN_B3,PIN_B2,PIN_B1,PIN_B0 )
+#use rs232(baud=1200,parity=N,xmit=PIN_C6,rcv=PIN_C7,bits=8,stream=PORT1)
+
+#define ENA PIN_B7
+#define IN1 PIN_B6
+#define IN2 PIN_B5
+#define IN3 PIN_B4
+#define IN4 PIN_B3 
+#define ENB PIN_B2 
+
+char dado;
+
+void main()
+{
+   setup_wdt(WDT_288MS);      //~288,0 ms reset
+   
+   output_b(0b00000000);      //Começa com tudo parado
+
+   output_high(ENA); //Ativa o motor A
+   output_high(ENB); //Ativa o motor B
+   while(TRUE)          //loop infinito
+   {
+      if(kbhit()){      //verifica se tem algum char no buffer do serial
+         dado = getc();    //se tiver, dado recebe o que está no buffer
+         switch(dado){     //Compara dado com os casos abaixo
+         case 'A':
+            output_high(IN1);    //Ativa o IN1 do motor A
+            output_low(IN2);     //Desativa o IN2 do motor A
+            //Nesse caso o motor A terá uma aceleração positiva
+            fprintf(PORT1,"\nRecebido: A\n");   //Confirma o último comando executado
+         break;
+         case 'a':
+            output_low(IN1);     //Desativa o IN1 do motor A
+            output_low(IN2);     //Desativa o IN2 do motor A
+            //Nesse caso o motor A ficará parado
+            fprintf(PORT1,"\nRecebido: a\n");   //Confirma o último comando executado
+         break;
+         case 'B':
+            output_low(IN1);     //Desativa o IN1 do motor A
+            output_high(IN2);    //Ativa o IN2 do motor A
+            //Nesse caso o motor A terá uma aceleração negativa
+            fprintf(PORT1,"\nRecebido: B\n");   //Confirma o último comando executado
+         break;
+         /////////////////////////Daqui para baixo são os casos que alteram o motor B//////////////////////////
+         case 'C':
+            output_high(IN3);    //Ativa o IN3 do motor A
+            output_low(IN4);     //Desativa o IN4 do motor A
+            //Nesse caso o motor B terá uma aceleração positiva
+            fprintf(PORT1,"\nRecebido: C\n");   //Confirma o último comando executado
+         break;
+         case 'c':
+            output_low(IN3);     //Desativa o IN3 do motor A
+            output_low(IN4);     //Desativa o IN4 do motor A
+            //Nesse caso o motor B ficará parado
+            fprintf(PORT1,"\nRecebido: c\n");   //Confirma o último comando executado
+         break;
+         case 'D':
+            output_low(IN3);     //Desativa o IN3 do motor A
+            output_high(IN4);    //Ativa o IN4 do motor A
+            //Nesse caso o motor B terá uma aceleração negativa
+            fprintf(PORT1,"\nRecebido: D\n");   //Confirma o último comando executado
+         break;
+         } //fim do switch
+      } //fim do if
+      restart_wdt(); //reseta o timer do WDT
+   } //fim do while
+
+} //fim do main 

@@ -1,0 +1,42 @@
+#include <main.h>
+
+char dado;
+
+void main()
+{
+   output_high(PIN_B7);
+   output_high(PIN_B2);
+   while(TRUE)
+   {
+      if(kbhit()){
+         dado = getc();
+         switch(dado){
+         case 'A':
+            output_high(PIN_B6);
+            output_low(PIN_B5);
+         break;
+         case 'a':
+            output_low(PIN_B6);
+            output_low(PIN_B5);
+         break;
+         case 'B':
+            output_low(PIN_B6):
+            output_high(PIN_B5);
+         break;
+         case 'C':
+            output_high(PIN_B3);
+            output_low(PIN_B2);
+         break;
+         case 'c':
+            output_low(PIN_B3);
+            output_low(PIN_B2);
+         break;
+         case 'D':
+            output_low(PIN_B3);
+            output_high(PIN_B2);
+         break;
+         }
+      }
+   }
+
+}
