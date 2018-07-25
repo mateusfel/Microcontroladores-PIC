@@ -1,0 +1,294 @@
+004-005 @READ_PROGRAM_MEMORY8.P1
+004-005 @WRITE_PROGRAM_MEMORY8.P2
+006     kbd
+015     CCP_1
+015     CCP_1_LOW
+016     CCP_1_HIGH
+01B     CCP_2
+01B     CCP_2_LOW
+01C     CCP_2_HIGH
+020     @TRIS_C
+021     kbd_getc.kbd_call_count
+022.0   kbd_getc.kbd_down
+023     kbd_getc.last_key
+024     kbd_getc.col
+025     tecla
+026     tela
+027-028 i
+029-03C usuario
+03D     usuarioDigito
+03E     apertouParaDesistir
+03F     primeiroCadastro
+040     opcoesDoMenu.continua
+040-041 apagar.posicao
+040     entrarNoMenu.verifica
+040     entrar.verifica
+040     busca.continua
+040     lcd_init.i
+040     MAIN.@SCRATCH1
+040     sobre.@SCRATCH1
+041     verificaLogin.posicao_na_memoria
+041-042 busca.posicao
+041     opcoesDoMenu.opcao
+041     lcd_init.@SCRATCH1
+041     entrar.@SCRATCH1
+041     entrarNoMenu.@SCRATCH1
+042-043 apagar.posicaodoX
+042     verificaLogin.usuario_match
+042     imprimeOpcaoDoMenu.opcao
+043     verificaLogin.continua_a_busca
+043-044 busca.posicaodoX
+043     imprimeOpcaoDoMenu.@SCRATCH1
+044     verificaIDexistente.posicao_na_memoria
+044     verificaLogin.g
+044     armazenaPINnaRAM.tipo
+044-045 armazenaCadastroNaEEPROM.posicaoLivreEEPROM
+044     verificaIDposicao.posicao_na_memoria
+044     armazenaIDnaRAM.tipo
+044-045 @MUL1616.P1
+044     cadastro.@SCRATCH1
+044     imprimeOpcaoDoMenu.@SCRATCH2
+044     apagar.@SCRATCH1
+044     verificaPrimeiroCadastro.@SCRATCH1
+045     armazenaPINnaRAM.continua
+045-046 escreveUsuario.posicao
+045     @PSTRINGCN7_639.P1
+045     verificaIDposicao.usuario_match
+045     @PRINTF_D_639.P1
+045     armazenaIDnaRAM.continua
+045     verificaIDexistente.usuario_match
+045     verificaLogin.@SCRATCH1
+045     @PSTRINGC_639.@SCRATCH1
+045     busca.@SCRATCH1
+045     apagar.@SCRATCH2
+046     verificaIDposicao.continua_a_busca
+046     lastChar.caractere
+046-047 armazenaCadastroNaEEPROM.posicaoXnaEEPROM
+046     mensagemID.tipo
+046-047 @MUL1616.P1
+046     @PRINTF_D_639.P2
+046     verificaIDexistente.continua_a_busca
+046     mensagemPIN.tipo
+046     armazenaIDnaRAM.@SCRATCH1
+046     armazenaPINnaRAM.@SCRATCH1
+046     apagaIDnaRAM.@SCRATCH1
+046     apagaPINnaRAM.@SCRATCH1
+046     verificaLogin.@SCRATCH2
+046     @PSTRINGCN7_639.@SCRATCH1
+046     @PSTRINGC_639.@SCRATCH2
+046     busca.@SCRATCH2
+046     apagar.@SCRATCH3
+047     verificaIDposicao.g
+047     kbd_getc.kchar
+047     verificaIDexistente.g
+047     escreveUsuario.c
+047     armazenaIDnaRAM.@SCRATCH2
+047     armazenaPINnaRAM.@SCRATCH2
+047     apagaIDnaRAM.@SCRATCH2
+047     apagaPINnaRAM.@SCRATCH2
+047     @PSTRINGCN7_639.@SCRATCH2
+047     @PRINTF_D_639.@SCRATCH1
+047     apagar.@SCRATCH4
+048     kbd_getc.row
+048     armazenaCadastroNaEEPROM.j
+048     verificaIDexistente.@SCRATCH1
+048     verificaIDposicao.@SCRATCH1
+048     @PSTRINGCN7_639.@SCRATCH3
+048     @PRINTF_D_639.@SCRATCH2
+048     @MUL1616.@SCRATCH1
+048     escreveUsuario.@SCRATCH1
+049     retornaPrimeiraPosicaoLivreNaEEPROM.leitura
+049     retornaPosicaoDoXnaEEPROM.leitura
+049     @MUL88.P1
+049     kbd_getc.@SCRATCH1
+049     @PSTRINGC7_639.@SCRATCH1
+049     armazenaCadastroNaEEPROM.@SCRATCH1
+049     verificaIDexistente.@SCRATCH2
+049     verificaIDposicao.@SCRATCH2
+049     @PSTRINGCN7_639.@SCRATCH4
+049     @PRINTF_D_639.@SCRATCH3
+049     escreveUsuario.@SCRATCH2
+04A-04B read_ext_eeprom.address
+04A     @MUL88.P1
+04A     @PSTRINGC7_639.@SCRATCH2
+04A     armazenaCadastroNaEEPROM.@SCRATCH2
+04A     @PRINTF_D_639.@SCRATCH4
+04B     @DIV88.P1
+04B     @PSTRINGC7_639.@SCRATCH3
+04B     armazenaCadastroNaEEPROM.@SCRATCH3
+04C-04D write_ext_eeprom.address
+04C     read_ext_eeprom.data
+04C     @DIV88.P1
+04C     @PSTRINGC7_639.@SCRATCH4
+04D     @I2C_READ_1.P1
+04D     lcd_putc.c
+04D     read_ext_eeprom.@SCRATCH1
+04D     @DIV88.@SCRATCH1
+04E     lcd_gotoxy.x
+04E     write_ext_eeprom.data
+04E     @delay_ms1.P1
+04E     @I2C_READ_1.@SCRATCH1
+04F.0   ext_eeprom_ready.ack
+04F     lcd_gotoxy.y
+04F     @I2C_READ_1.@SCRATCH2
+04F     write_ext_eeprom.@SCRATCH1
+050     @I2C_WRITE_1.P1
+050     lcd_gotoxy.address
+051     lcd_gotoxy.@SCRATCH1
+052     lcd_send_byte.address
+053     lcd_send_byte.n
+054     lcd_read_byte.low
+054     lcd_send_byte.@SCRATCH1
+055     lcd_read_byte.high
+055     lcd_send_nibble.n
+056     lcd_read_nibble.n
+056     lcd_read_byte.@SCRATCH1
+057     lcd_read_nibble.@SCRATCH1
+077     @SCRATCH
+078     @SCRATCH
+078     _RETURN_
+079     @SCRATCH
+07A     @SCRATCH
+09C.6   C1OUT
+09C.7   C2OUT
+10D-10E @READ_PROGRAM_MEMORY8.P1
+10D-10E @WRITE_PROGRAM_MEMORY8.P2
+
+ROM Allocation:
+000004  LCD_INIT_STRING.call
+000008  LCD_INIT_STRING.data
+00000C  KEYS.call
+000010  KEYS.data
+000020  opcoesMenu.call
+000020  opcoesMenu.data
+00005C  @const713.call
+000062  @const715.call
+00006E  @const719.call
+00007B  @const720.call
+000084  @const722.call
+00008A  @const723.call
+00009B  @const726.call
+0000A1  @const727.call
+0000B1  @const730.call
+0000B9  @const731.call
+0000C2  @const732.call
+0000C9  @const733.call
+0000D1  @const734.call
+0000DA  @const735.call
+0000E4  @const736.call
+0000EB  @const737.call
+0000F2  @const741.call
+0000FC  @const745.call
+000109  @const746.call
+000113  @const747.call
+00011B  @const748.call
+000125  @const750.call
+000133  @const751.call
+00013F  @const752.call
+00014B  @const770.call
+000154  @const783.call
+00015C  @const785.call
+000164  @const787.call
+00016C  @const791.call
+000172  @const792.call
+000179  @const796.call
+000184  @const797.call
+00018F  @const798.call
+00019C  @const799.call
+0001A5  @const800.call
+0001AE  @const801.call
+0001B6  @const802.call
+0001BF  @const803.call
+0001C6  @const804.call
+0001D8  @const805.call
+0001E2  @const809.call
+0001F2  @delay_ms1
+000206  lcd_send_nibble
+00023A  lcd_send_byte
+00024E  lcd_read_byte
+0002A2  lcd_read_nibble
+000312  lcd_init
+000361  kbd_init
+000364  init_ext_eeprom
+000371  lcd_putc
+0003BD  @PSTRINGC7_639
+000408  @I2C_WRITE_1
+000464  ext_eeprom_ready
+0004AE  write_ext_eeprom
+00050F  apagaADM
+000526  read_ext_eeprom
+0005A4  @I2C_READ_1
+000618  mensagemID
+000645  kbd_getc
+0006AE  @goto10749
+0006B6  lastChar
+0006D0  armazenaIDnaRAM
+00074E  apagaIDnaRAM
+000778  mensagemPIN
+000799  @MUL88
+0007BE  verificaPrimeiroCadastro
+000800  armazenaPINnaRAM
+000891  apagaPINnaRAM
+0008C8  armazenaCadastroNaEEPROM
+0008D1  retornaPrimeiraPosicaoLivreNaEEPROM
+00098C  cadastro
+00099D  verificaIDexistente
+000A1D  verificaLogin
+000A7B  entrar
+000B28  entrarNoMenu
+000B8C  imprimeOpcaoDoMenu
+000BFC  @PRINTF_D_639
+000C2E  @DIV88
+000C8A  @PSTRINGCN7_639
+000CEC  @PSTRINGC_639
+000D13  lcd_gotoxy
+000D2C  opcoesDoMenu
+000D74  busca
+000E9E  escreveUsuario
+000EDE  sobre
+001000  @cinit1
+001000  MAIN
+001013  @cinit2
+0010A3  apagar
+0010A5  retornaPosicaoDoXnaEEPROM
+0010F7  verificaIDposicao
+001185  @MUL1616
+00122D  formatar
+001275  @goto10875
+098C  inicio
+
+Project Directory:
+    C:\Users\mateu\Google Drive\Engenharia\Microcontroladores\Fechadura Eletrônica\Software 1.5c\
+
+Project Files:
+    main.c                                                  [03-jul-18 23:12  CRC=FE3D9262]
+    ..\Software\main.h                                      [30-jun-18 01:02  CRC=3FCF1C7F]
+    ..\..\..\..\..\..\..\Program Files (x86)\PICC\Devices\16F876A.h [03-jul-13 14:28  CRC=B045F1FF]
+    ..\..\..\..\..\..\..\Program Files (x86)\PICC\Drivers\2416mascarenhas.C [22-jun-18 23:21  CRC=6411103C]
+    ..\..\..\..\..\..\..\Program Files (x86)\PICC\Drivers\LCD.C [23-ago-12 09:01  CRC=D28E8746]
+    ..\..\..\..\..\..\..\Program Files (x86)\PICC\Drivers\kbd4x4.C [23-jun-18 23:02  CRC=ADACD6A8]
+
+Source signature=804BE5B2
+
+Units:
+    main (main)
+
+Compiler Settings:
+    Processor:      PIC16F876A
+    Pointer Size:   16
+    ADC Range:      0-65535
+    Opt Level:      9
+    Short,Int,Long: UNSIGNED: 1,8,16
+    Float,Double:   32,32
+
+Output Files:
+    XREF file:   main.xsym
+    Errors:      main.err
+    Ext Symbols: main.esym
+    INHX8:       main.hex
+    Symbols:     main.sym
+    List:        main.lst
+    Debug/COFF:  main.cof
+    Project:     main.ccspjt
+    Call Tree:   main.tre
+    Statistics:  main.STA

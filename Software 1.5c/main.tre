@@ -1,0 +1,341 @@
+ÀÄSoftware 1
+   ÀÄMAIN  2/629  Ram=1
+      ÃÄ@cinit1  (Inline)  Ram=0
+      ÃÄ@delay_ms1  0/20  Ram=1
+      ÃÄlcd_init  0/79  Ram=2
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÃÄlcd_send_nibble  0/52  Ram=1
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÃÄlcd_send_nibble  0/52  Ram=1
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÃÄ@const620  0/8  Ram=0
+      ³  ÀÄlcd_send_byte  0/216  Ram=3
+      ³     ÃÄlcd_read_byte  (Inline)  Ram=3
+      ³     ³  ÃÄlcd_read_nibble  (Inline)  Ram=2
+      ³     ³  ÀÄlcd_read_nibble  (Inline)  Ram=2
+      ³     ÃÄlcd_send_nibble  0/52  Ram=1
+      ³     ÀÄlcd_send_nibble  0/52  Ram=1
+      ÃÄkbd_init  0/3  Ram=0
+      ÃÄinit_ext_eeprom  0/13  Ram=0
+      ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ÃÄlcd_gotoxy  (Inline)  Ram=4
+      ³  ³  ³  ÀÄlcd_send_byte  0/216  Ram=3
+      ³  ³  ³     ÀÄ*
+      ³  ³  ÃÄlcd_send_byte  0/216  Ram=3
+      ³  ³  ³  ÀÄ*
+      ³  ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ³  ÃÄlcd_gotoxy  (Inline)  Ram=4
+      ³  ³  ³  ÀÄ*
+      ³  ³  ÃÄlcd_send_byte  0/216  Ram=3
+      ³  ³  ³  ÀÄ*
+      ³  ³  ÀÄlcd_send_byte  0/216  Ram=3
+      ³  ³     ÀÄ*
+      ³  ÀÄlcd_putc  0/76  Ram=1
+      ³     ÀÄ*
+      ÃÄ@delay_ms1  0/20  Ram=1
+      ÃÄ@delay_ms1  0/20  Ram=1
+      ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ÀÄ*
+      ÃÄ@delay_ms1  0/20  Ram=1
+      ÃÄapagaADM  0/23  Ram=0
+      ³  ÀÄwrite_ext_eeprom  0/97  Ram=4
+      ³     ÃÄext_eeprom_ready  0/74  Ram=1
+      ³     ³  ÀÄ@I2C_WRITE_1  0/92  Ram=1
+      ³     ÃÄ@I2C_WRITE_1  0/92  Ram=1
+      ³     ÃÄ@I2C_WRITE_1  0/92  Ram=1
+      ³     ÀÄ@I2C_WRITE_1  0/92  Ram=1
+      ÃÄverificaPrimeiroCadastro  0/30  Ram=1
+      ³  ÃÄread_ext_eeprom  0/242  Ram=4
+      ³  ³  ÃÄext_eeprom_ready  0/74  Ram=1
+      ³  ³  ³  ÀÄ*
+      ³  ³  ÃÄ@I2C_WRITE_1  0/92  Ram=1
+      ³  ³  ÃÄ@I2C_WRITE_1  0/92  Ram=1
+      ³  ³  ÃÄ@I2C_WRITE_1  0/92  Ram=1
+      ³  ³  ÀÄ@I2C_READ_1  (Inline)  Ram=3
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÀÄcadastro  1/145  Ram=1
+      ³     ÃÄarmazenaIDnaRAM  0/168  Ram=3
+      ³     ³  ÃÄmensagemID  0/45  Ram=1
+      ³     ³  ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³  ³  ÀÄ*
+      ³     ³  ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³  ³  ÀÄ*
+      ³     ³  ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³  ³  ÀÄ*
+      ³     ³  ³  ÀÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³     ÀÄ*
+      ³     ³  ÃÄapagaIDnaRAM  (Inline)  Ram=2
+      ³     ³  ÃÄlastChar  0/26  Ram=1
+      ³     ³  ³  ÃÄkbd_getc  0/105  Ram=3
+      ³     ³  ³  ³  ÃÄ@goto10749  0/8  Ram=0
+      ³     ³  ³  ³  ÀÄ@const652  0/20  Ram=0
+      ³     ³  ³  ÀÄ@delay_ms1  0/20  Ram=1
+      ³     ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³     ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³     ³  ÃÄapagaIDnaRAM  (Inline)  Ram=2
+      ³     ³  ÃÄmensagemID  0/45  Ram=1
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÃÄapagaIDnaRAM  (Inline)  Ram=2
+      ³     ³  ÃÄmensagemID  0/45  Ram=1
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÀÄlcd_putc  0/76  Ram=1
+      ³     ³     ÀÄ*
+      ³     ÃÄarmazenaPINnaRAM  1/200  Ram=3
+      ³     ³  ÃÄmensagemPIN  0/33  Ram=1
+      ³     ³  ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³  ³  ÀÄ*
+      ³     ³  ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³  ³  ÀÄ*
+      ³     ³  ³  ÀÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³     ÀÄ*
+      ³     ³  ÃÄapagaPINnaRAM  (Inline)  Ram=2
+      ³     ³  ÃÄlastChar  0/26  Ram=1
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³     ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³     ³  ÃÄapagaPINnaRAM  (Inline)  Ram=2
+      ³     ³  ÃÄmensagemPIN  0/33  Ram=1
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÃÄapagaPINnaRAM  (Inline)  Ram=2
+      ³     ³  ÃÄmensagemPIN  0/33  Ram=1
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÃÄlcd_putc  0/76  Ram=1
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÀÄlcd_putc  0/76  Ram=1
+      ³     ³     ÀÄ*
+      ³     ÃÄverificaIDexistente  (Inline)  Ram=5
+      ³     ³  ÃÄ@MUL88  0/37  Ram=2
+      ³     ³  ÃÄread_ext_eeprom  0/242  Ram=4
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÃÄ@MUL88  0/37  Ram=2
+      ³     ³  ÀÄread_ext_eeprom  0/242  Ram=4
+      ³     ³     ÀÄ*
+      ³     ÃÄarmazenaCadastroNaEEPROM  1/196  Ram=3
+      ³     ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÃÄretornaPrimeiraPosicaoLivreNaEEPROM  (Inline)  Ram=1
+      ³     ³  ³  ÃÄread_ext_eeprom  0/242  Ram=4
+      ³     ³  ³  ³  ÀÄ*
+      ³     ³  ³  ÀÄread_ext_eeprom  0/242  Ram=4
+      ³     ³  ³     ÀÄ*
+      ³     ³  ÃÄretornaPosicaoDoXnaEEPROM  (Inline)  Ram=1
+      ³     ³  ³  ÃÄread_ext_eeprom  0/242  Ram=4
+      ³     ³  ³  ³  ÀÄ*
+      ³     ³  ³  ÀÄread_ext_eeprom  0/242  Ram=4
+      ³     ³  ³     ÀÄ*
+      ³     ³  ÃÄwrite_ext_eeprom  0/97  Ram=4
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÃÄwrite_ext_eeprom  0/97  Ram=4
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³     ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ³  ÀÄ*
+      ³     ³  ÀÄ@delay_ms1  0/20  Ram=1
+      ³     ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ÀÄ*
+      ³     ÃÄ@delay_ms1  0/20  Ram=1
+      ³     ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³     ³  ÀÄ*
+      ³     ÃÄ@delay_ms1  0/20  Ram=1
+      ³     ÀÄarmazenaCadastroNaEEPROM  1/196  Ram=3
+      ³        ÀÄ*
+      ÃÄ@goto10875  2/13  Ram=0
+      ÃÄentrar  1/173  Ram=1
+      ³  ÃÄarmazenaIDnaRAM  0/168  Ram=3
+      ³  ³  ÀÄ*
+      ³  ÃÄarmazenaPINnaRAM  1/200  Ram=3
+      ³  ³  ÀÄ*
+      ³  ÃÄverificaLogin  1/94  Ram=5
+      ³  ³  ÃÄ@MUL88  0/37  Ram=2
+      ³  ³  ÃÄread_ext_eeprom  0/242  Ram=4
+      ³  ³  ³  ÀÄ*
+      ³  ³  ÃÄ@MUL88  0/37  Ram=2
+      ³  ³  ÀÄread_ext_eeprom  0/242  Ram=4
+      ³  ³     ÀÄ*
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÀÄ@delay_ms1  0/20  Ram=1
+      ÃÄentrarNoMenu  1/100  Ram=1
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÃÄarmazenaIDnaRAM  0/168  Ram=3
+      ³  ³  ÀÄ*
+      ³  ÃÄarmazenaPINnaRAM  1/200  Ram=3
+      ³  ³  ÀÄ*
+      ³  ÃÄverificaLogin  1/94  Ram=5
+      ³  ³  ÀÄ*
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÀÄ@delay_ms1  0/20  Ram=1
+      ÃÄopcoesDoMenu  1/72  Ram=2
+      ³  ÃÄimprimeOpcaoDoMenu  1/416  Ram=3
+      ³  ³  ÃÄ@MUL88  0/37  Ram=2
+      ³  ³  ÃÄ@PSTRINGCN7_639  (Inline)  Ram=5
+      ³  ³  ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ³  ³  ÀÄ*
+      ³  ³  ³  ÀÄlcd_putc  0/76  Ram=1
+      ³  ³  ³     ÀÄ*
+      ³  ³  ÃÄ@PRINTF_D_639  (Inline)  Ram=6
+      ³  ³  ³  ÃÄ@DIV88  (Inline)  Ram=3
+      ³  ³  ³  ÃÄ@DIV88  (Inline)  Ram=3
+      ³  ³  ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ³  ³  ÀÄ*
+      ³  ³  ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ³  ³  ÀÄ*
+      ³  ³  ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ³  ³  ÀÄ*
+      ³  ³  ³  ÀÄlcd_putc  0/76  Ram=1
+      ³  ³  ³     ÀÄ*
+      ³  ³  ÃÄ@PSTRINGCN7_639  (Inline)  Ram=5
+      ³  ³  ³  ÀÄ*
+      ³  ³  ÃÄ@PSTRINGC_639  (Inline)  Ram=2
+      ³  ³  ³  ÀÄlcd_putc  0/76  Ram=1
+      ³  ³  ³     ÀÄ*
+      ³  ³  ÃÄlcd_gotoxy  (Inline)  Ram=4
+      ³  ³  ³  ÀÄ*
+      ³  ³  ÀÄlcd_putc  0/76  Ram=1
+      ³  ³     ÀÄ*
+      ³  ÃÄlastChar  0/26  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄimprimeOpcaoDoMenu  1/416  Ram=3
+      ³  ³  ÀÄ*
+      ³  ÀÄimprimeOpcaoDoMenu  1/416  Ram=3
+      ³     ÀÄ*
+      ÃÄcadastro  1/145  Ram=1
+      ³  ÀÄ*
+      ÃÄbusca  1/362  Ram=7
+      ³  ÃÄretornaPosicaoDoXnaEEPROM  (Inline)  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄescreveUsuario  (Inline)  Ram=4
+      ³  ³  ÃÄread_ext_eeprom  0/242  Ram=4
+      ³  ³  ³  ÀÄ*
+      ³  ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ³  ÀÄ*
+      ³  ³  ÀÄlcd_putc  0/76  Ram=1
+      ³  ³     ÀÄ*
+      ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄlastChar  0/26  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄread_ext_eeprom  0/242  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄescreveUsuario  (Inline)  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄescreveUsuario  (Inline)  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄlcd_putc  0/76  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÀÄlcd_putc  0/76  Ram=1
+      ³     ÀÄ*
+      ÃÄapagar  (Inline)  Ram=8
+      ³  ÃÄretornaPosicaoDoXnaEEPROM  (Inline)  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄarmazenaIDnaRAM  0/168  Ram=3
+      ³  ³  ÀÄ*
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄverificaIDposicao  (Inline)  Ram=5
+      ³  ³  ÃÄ@MUL88  0/37  Ram=2
+      ³  ³  ÃÄread_ext_eeprom  0/242  Ram=4
+      ³  ³  ³  ÀÄ*
+      ³  ³  ÃÄ@MUL88  0/37  Ram=2
+      ³  ³  ÀÄread_ext_eeprom  0/242  Ram=4
+      ³  ³     ÀÄ*
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄ@delay_ms1  0/20  Ram=1
+      ³  ÃÄ@MUL1616  (Inline)  Ram=5
+      ³  ÃÄread_ext_eeprom  0/242  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄwrite_ext_eeprom  0/97  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄwrite_ext_eeprom  0/97  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄwrite_ext_eeprom  0/97  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄwrite_ext_eeprom  0/97  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄverificaPrimeiroCadastro  0/30  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÀÄ@delay_ms1  0/20  Ram=1
+      ÃÄformatar  (Inline)  Ram=0
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄlastChar  0/26  Ram=1
+      ³  ³  ÀÄ*
+      ³  ÃÄ@PSTRINGC7_639  0/75  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÃÄwrite_ext_eeprom  0/97  Ram=4
+      ³  ³  ÀÄ*
+      ³  ÀÄverificaPrimeiroCadastro  0/30  Ram=1
+      ³     ÀÄ*
+      ÀÄsobre  1/131  Ram=1
+         ÃÄ@PSTRINGC7_639  0/75  Ram=4
+         ³  ÀÄ*
+         ÃÄ@delay_ms1  0/20  Ram=1
+         ÃÄ@PSTRINGC7_639  0/75  Ram=4
+         ³  ÀÄ*
+         ÃÄ@delay_ms1  0/20  Ram=1
+         ÃÄ@PSTRINGC7_639  0/75  Ram=4
+         ³  ÀÄ*
+         ÃÄ@delay_ms1  0/20  Ram=1
+         ÃÄ@PSTRINGC7_639  0/75  Ram=4
+         ³  ÀÄ*
+         ÃÄ@delay_ms1  0/20  Ram=1
+         ÃÄ@PSTRINGC7_639  0/75  Ram=4
+         ³  ÀÄ*
+         ÃÄ@delay_ms1  0/20  Ram=1
+         ÃÄ@PSTRINGC7_639  0/75  Ram=4
+         ³  ÀÄ*
+         ÃÄ@delay_ms1  0/20  Ram=1
+         ÃÄ@PSTRINGC7_639  0/75  Ram=4
+         ³  ÀÄ*
+         ÀÄ@delay_ms1  0/20  Ram=1

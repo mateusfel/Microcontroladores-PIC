@@ -1,0 +1,145 @@
+
+ROM used:   4543/8192 (55%)
+            4738/8192 (58%) including unused fragments
+
+            2.3 Average locations per line
+            7.2 Average locations per statement
+
+RAM used:   38/368 (10%) at main() level
+            61/368 (17%) worst case
+
+Stack used: 8 worst case (8 in main + 0 for interrupts)
+Stack size: 8
+
+Lines Stmts  %   Files
+----- ----- ---  -----
+  713   462  74  main.c
+   15     0   0  ..\Software\main.h
+  610     0   0  ..\..\..\..\..\..\..\Program Files (x86)\PICC\Devices\16F876A.h
+   88    23   4  ..\..\..\..\..\..\..\Program Files (x86)\PICC\Drivers\2416mascarenhas.C
+  456   100  16  ..\..\..\..\..\..\..\Program Files (x86)\PICC\Drivers\LCD.C
+  135    43   7  ..\..\..\..\..\..\..\Program Files (x86)\PICC\Drivers\kbd4x4.C
+----- -----
+ 2017   628 Total
+
+Page ROM  %  RAM   Vol Diff  Functions:
+---- --- --- ---   --- ----  ----------
+0     20   0    1             @delay_ms1
+ Inline         3             @I2C_READ_1
+0     92   2    1             @I2C_WRITE_1
+0     13   0    0    32  1.0  init_ext_eeprom
+0     74   2    1    84  2.4  ext_eeprom_ready
+0     97   2    4   202  4.3  write_ext_eeprom
+0    242   5    4   357  3.9  read_ext_eeprom
+0      8   0    0             @const620
+ Inline         3   760  4.5  lcd_read_byte
+ Inline         2   262  3.7  lcd_read_nibble
+0     52   1    1   399  2.4  lcd_send_nibble
+0    216   5    3   415  3.7  lcd_send_byte
+0     79   2    2   704  5.0  lcd_init
+ Inline         4   208  6.3  lcd_gotoxy
+0     76   2    1   354  4.7  lcd_putc
+0     20   0    0             @const652
+0      3   0    0     3  0.0  kbd_init
+0    105   2    3  5872 10.1  kbd_getc
+0      8   0    0             @goto10749
+0     60   1    0             @const668
+2    629  14    1   857  5.2  MAIN
+0      6   0    0             @const713
+0     75   2    4             @PSTRINGC7_639
+0     12   0    0             @const715
+2     13   0    0             @goto10875
+0     26   1    1   149  3.1  lastChar
+1    145   3    1   426  5.0  cadastro
+0     13   0    0             @const719
+0      9   0    0             @const720
+0    168   4    3  1108  8.3  armazenaIDnaRAM
+0      6   0    0             @const722
+0     17   0    0             @const723
+1    200   4    3  1216  8.8  armazenaPINnaRAM
+0      6   0    0             @const726
+0     16   0    0             @const727
+0     45   1    1   275  3.1  mensagemID
+0      8   0    0             @const730
+0      9   0    0             @const731
+0      7   0    0             @const732
+0      8   0    0             @const733
+0     33   1    1   200  3.0  mensagemPIN
+0      9   0    0             @const734
+0     10   0    0             @const735
+0      7   0    0             @const736
+ Inline         2    88  3.2  apagaIDnaRAM
+ Inline         2    88  3.2  apagaPINnaRAM
+1    196   4    3   413  5.8  armazenaCadastroNaEEPROM
+0      7   0    0             @const737
+0     10   0    0             @const741
+ Inline         1   206  4.1  retornaPrimeiraPosicaoLivreNaEEPROM
+ Inline         1   276  6.0  retornaPosicaoDoXnaEEPROM
+1    173   4    1   884  5.3  entrar
+0     13   0    0             @const745
+0     10   0    0             @const746
+0      8   0    0             @const747
+1    100   2    1   469  3.7  entrarNoMenu
+0     10   0    0             @const748
+0     14   0    0             @const750
+0     12   0    0             @const751
+0     12   0    0             @const752
+1     94   2    5   720  9.2  verificaLogin
+0     37   1    2             @MUL88
+ Inline         5   590  7.7  verificaIDexistente
+ Inline         5   598  8.2  verificaIDposicao
+1     72   2    2   756  7.3  opcoesDoMenu
+1    416   9    3   127  2.5  imprimeOpcaoDoMenu
+0      9   0    0             @const770
+ Inline         5             @PSTRINGCN7_639
+ Inline         3             @DIV88
+ Inline         6             @PRINTF_D_639
+ Inline         2             @PSTRINGC_639
+1    362   8    7   910  7.9  busca
+0      8   0    0             @const783
+0      8   0    0             @const785
+0      8   0    0             @const787
+ Inline         8  1012  7.8  apagar
+0      6   0    0             @const791
+0      7   0    0             @const792
+ Inline         5             @MUL1616
+0     11   0    0             @const796
+ Inline         0   307  5.3  formatar
+0     11   0    0             @const797
+0     13   0    0             @const798
+1    131   3    1   417  2.3  sobre
+0      9   0    0             @const799
+0      9   0    0             @const800
+0      8   0    0             @const801
+0      9   0    0             @const802
+0      7   0    0             @const803
+0     18   0    0             @const804
+0     10   0    0             @const805
+ Inline         4   255  5.3  escreveUsuario
+0     30   1    1   163  3.3  verificaPrimeiroCadastro
+0     16   0    0             @const809
+0     23   1    0    88  3.2  apagaADM
+ Inline         0             @cinit1
+
+Program metrics:
+    Functions               39
+    Statements              628
+    Comments                511
+    Volume (V)              39220
+    Difficulty (D)          186.7
+    Effort to implement (E) 7322895
+    Time to implement (T)   113 hours, 0 minutes
+    Est Delivered Bugs (B)  13
+    Cyclomatic Complexity   116
+    Maintainability (MI)    58
+
+ Segment     Used  Free
+-----------  ----  ----
+00000-00003     4  0  
+00004-007FF  2008  36  
+00800-00FFF  1889  159  
+01000-017FF   642  1406  
+01800-01FFF     0  2048  
+
+
+

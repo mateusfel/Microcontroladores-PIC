@@ -1,0 +1,686 @@
+#include <main.h>
+
+#include <2416mascarenhas.C> //Mascarenhas pois os pinos I2C foram configurados fora do padrão da biblioteca
+#define use_portb_kbd TRUE
+#include <kbd4x4.C>
+
+#define LCD_ENABLE_PIN  PIN_C2                                    ////
+#define LCD_RS_PIN      PIN_C0                                    ////
+#define LCD_RW_PIN      PIN_C1                                    ////
+#define LCD_DATA4       PIN_A0                                    ////
+#define LCD_DATA5       PIN_A1                                    ////
+#define LCD_DATA6       PIN_A2                                    ////
+#define LCD_DATA7       PIN_A3                                    ////
+#include <LCD.C>
+
+#define buzzer PIN_C5
+#define rele   PIN_A5
+#define botao_para_redefinir  PIN_A4
+
+char tecla = 0;
+int tela = 0;
+unsigned int16 i = 0;
+
+const char opcoesMenu [6][11] = {"Cadastro","Busca","Apagar","Formatar","Sobre","Sair"};
+char  usuario[20] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; //Inicia usuário todo apagado
+int   usuarioDigito = 0;
+int   apertouParaDesistir = FALSE;
+int   primeiroCadastro = FALSE;
+
+///////// PROTÓTIPOS DE FUNÇÕES
+char  lastChar(void);
+void  verificaPrimeiroCadastro(void);
+void  cadastro(void);
+unsigned int16   retornaPosicaoX(void);
+void  mensagemID(int);
+void  mensagemPIN(int);
+void  armazenaIDnaRAM(int);
+void  apagaIDnaRAM(void);
+void  armazenaPINnaRAM(int);
+void  apagaPINnaRAM(void);
+void  armazenaCadastroNaEEPROM(void);
+unsigned int16 retornaPrimeiraPosicaoLivreNaEEPROM(void); //Responsável por procurar o primeiro slot livre na EEPROM e retornar a sua posição à alguma variável
+unsigned int16 retornaPosicaoDoXnaEEPROM(void);
+void  entrar(void);
+void  entrarNoMenu(void);
+void  opcoesDoMenu(void);
+void  imprimeOpcaoDoMenu(int);
+void  cadastro(void);
+void  busca(void);
+void  apagar(void);
+void  formatar(void);
+void  sobre(void);
+void  mudaTelaPelaOpcaoDoMenu(int);
+int   verificaLogin(void); //Retorna se o login foi bem sucedido. 0 negado, 1 usuário comum e 2 administrador
+int   verificaIDexistente(void); //Retorna se o usuário já existe. 1-Sim e 0-Não
+int16 verificaIDposicao(void); //Retorna a posição do ID na memória. -1, 0, 1, 2, 3, 4...
+void  escreveUsuario(unsigned int16);
+void  apagaADM(); //Apaga o aministrador na memória e obriga o usuário a cadastrar um novo
+
+///////////// MAIN
+void main()
+{
+   kbd_init();
+   port_b_pullups(TRUE);
+   lcd_init();
+   init_ext_eeprom();
+   set_tris_a(0b00000000);
+   set_tris_c(0b00000000);
+   //printf(lcd_putc,"Iniciando..."); //Mensagem enquanto verifica a memória
+   
+   printf(lcd_putc,"\fBem vindo!");
+   delay_ms(1000);
+   
+   if(input(botao_para_redefinir)){ // Verifica se o operador está apertando o botão que redefine o administrador
+      printf(lcd_putc,"\fO ADM sera\nredefinido");
+      apagaADM(); // Apaga o cadastro do ADM na memória e obriga o operador a cadastrar um ADM na função a seguir
+   }
+   //////////////////////////// BLOCO PARA EFETUAR O PRIMEIRO CADASTRO DE USUÁRIO CASO AINDA NÃO EXISTA NADA NA MEMÓRIA
+   verificaPrimeiroCadastro();
+   /////////////////////////// FIM DO BLOCO DO PRIMEIRO CADASTRO
+   
+   
+   while(TRUE){
+      switch(tela){
+         case 0:
+            entrar();
+         break;
+         case 1:
+            entrarNoMenu();
+         break;
+         case 2:
+            opcoesDoMenu();
+         break;
+         case 3:
+            cadastro();
+         break;
+         case 4:
+            busca();
+         break;
+         case 5:
+            apagar();
+         break;
+         case 6:
+            formatar();
+         break; 
+         case 7:
+            sobre();
+         break;
+         case 8:
+            tela = 0; //Sai do Menu
+         break;
+      }
+   }
+}
+////////////////////// FUNÇÃO LASTCHAR
+char lastChar(){
+   char caractere = 0; //Inicia o char com 0 para que ele entre no loop
+   while(caractere == 0){ //Fica verificando o caractere até que ele deixe de ser NULL
+      caractere = kbd_getc();
+   }
+   output_high(buzzer);
+   delay_ms(10);
+   output_low(buzzer);
+   return caractere; //Retorna o caractere quando ele não é NULL e o programa continua;
+}
+///////////////////// CADASTRO
+void cadastro(){ //
+   inicio:
+   armazenaIDnaRAM(1); //Executa toda a rotina para armazenar na memória RAM os caracteres do ID digitados pelo usuário
+   if(apertouParaDesistir != TRUE){ //Se a pessoa apertou para sair da tela de cadastro não é mais necessário exibir a tela do PIN nem armazena-lo
+      armazenaPINnaRAM(1); //Executa toda a rotina para armazenar na memória RAM os caracteres do PIN digitados pelo usuário. FALSE é apra não esconder os caracteres do PIN
+   }
+   if(apertouParaDesistir != TRUE){ //Só vai armazenar na memória EEPROM se a pessoa não apertou para sair
+      if(primeiroCadastro != TRUE){
+         if(verificaIDexistente() == 0){ //Se o ID não existir ele irá armazenar na EEPROM
+            armazenaCadastroNaEEPROM(); //Executa toda a rotina para armazenar na EEPROM o usuário que está armazenado temporariamente na memória RAM
+         }
+         else{
+            printf(lcd_putc,"\fEste usuario\nja existe!");
+            delay_ms(1000);
+            printf(lcd_putc,"\fCadastre\num novo");
+            delay_ms(1000);
+            goto inicio;
+         }
+      }
+      else{
+         armazenaCadastroNaEEPROM(); //Executa toda a rotina para armazenar na EEPROM o usuário que está armazenado temporariamente na memória RAM
+         primeiroCadastro = FALSE; //Sempre que armazenar algo garante que ao menos 1 cadastro foi feito         
+      }
+   }
+   tela = 2;
+}
+////////////////
+void armazenaIDnaRAM(int tipo){ // (0) para Login, (1) para Cadastro, (2) para Menu, (3) para Apagar
+   mensagemID(tipo); //Exibe a mensagem da tela de Cadastro de ID
+   apagaIDnaRAM(); //Apaga por precaução para armazenar um novo valor
+   usuarioDigito = 0; //Começa a variável de indicação da posição do dígito no byte onde começa o armazenamento do ID
+   apertouParaDesistir = FALSE; //Porque o usuário ainda nem desistiu e pode estar em uma nova tentativa
+   int continua = TRUE; //FLAG para continuar no loop
+   while(continua){ //loop
+      tecla = lastChar();
+      switch(tecla){ //SWITCH DO ID
+         case 'A':
+            tela = 1; //Vai para a tela de login no Menu
+            continua = FALSE; //Sai do loop de armazenar o ID
+            apertouParaDesistir = TRUE; //Serve só para quando o usuário está fazendo o primeiro cadastro
+         break;
+         case 'B':
+            //Nada acontece
+         break;
+         case 'C': //Opção Voltar do teclado
+            tela = 0; //Volta para a tela principal de login
+            continua = FALSE; //Sai do loop de armazenar o ID
+            apertouParaDesistir = TRUE; //Indica que a pessoa paertou para SAIR
+            printf(lcd_putc,"\fCancelado");
+            delay_ms(1000);
+         break;
+         case 'D': //Representa o ENTER
+            if(usuarioDigito >= 4){   /// Se a pessoa digitou um ID maior do que 4 dígitos sai do loop de armazenamento do PIN
+               continua = 0; //Essa é a FLAG que mantém o loop, se ela vai apra zero o programa sai do loop
+            }
+            else{                ///// Se a pessoa der enter e não ter digitado 4 digitos apaga todo o ID digitado
+               printf(lcd_putc,"\f\fDeve conter ao\nmenos 4 digitos"); //Mensagem de alerta que some em 1 segundo
+               delay_ms(1000);
+               usuarioDigito = 0; //Volta a posição do dígito para 0 (byte onde começa o ID)
+               apagaIDnaRAM(); //Apaga o que já estava armazenado
+               mensagemID(tipo);
+            }
+         break;
+         case '*':   //Esse caso apaga o vetor ID, apaga os asteriscos digitado na tela e retorna ao dígito 0 do ID
+              usuarioDigito = 0; //Volta a posição do dígito para 0 (byte onde começa ID)/
+              apagaIDnaRAM(); //Apaga o que já estava armazenado
+              mensagemID(tipo);
+         break;
+         case '#':
+            //Nada acontece
+         break;
+         default: //Esse caso DEFAULT grava o número digitado no vetor pin
+            if(usuarioDigito < 10){  //limita a quantidade de dígitos do pin em 10 [vai de 0 à 9]
+               printf(lcd_putc,"%c",tecla);
+               usuario[usuarioDigito] = tecla; //O atual dígito do pin recebe o número digitado
+               usuarioDigito++; //avança o dígito do pin
+            }
+         break;
+      }
+   }
+}
+//////////////////
+void armazenaPINnaRAM(int tipo){ // (0) para ocultar o PIN e imprimir Login, (1) para mostrar o PIN e imprimir Cadastro, (2) para Menu
+   mensagemPIN(tipo); //Exibe a mensagem da tela de Cadastro de ID
+   apagaPINnaRAM(); //Apaga por precaução para armazenar um novo valor
+   usuarioDigito = 10; //Começa a variável de indicação da posição do dígito no byte onde começa o armazenamento do PIN
+   apertouParaDesistir = FALSE; //Porque o usuário ainda nem desistiu e pode estar em uma nova tentativa
+   int continua = TRUE; //FLAG para continuar no loop
+   while(continua){ //loop
+      tecla = lastChar();
+      switch(tecla){ //SWITCH DO PIN
+         case 'A':
+            tela = 1; //Vai para a tela de login no Menu
+            continua = FALSE; //Sai do loop de armazenar o ID
+            apertouParaDesistir = TRUE; //Serve só para quando o usuário está fazendo o primeiro cadastro
+         break;
+         case 'B':
+            //Nada acontece
+         break;
+         case 'C':
+            tela = 0; //Volta para a tela principal de login
+            continua = FALSE; //Sai do loop de armazenar o ID
+            apertouParaDesistir = TRUE; //Serve só para quando o usuário está fazendo o primeiro cadastro
+            printf(lcd_putc,"\fCancelado");
+            delay_ms(1000);
+         break;
+         case 'D': //Representa o ENTER
+            if(usuarioDigito >= 14){   /// Se a pessoa já digitou um PIN maior do que 4 dígitos sai do loop de armazenamento do PIN
+               continua = 0; //Essa é a FLAG que mantém o loop, se ela vai para zero o programa sai do loop
+            }
+            else{                ///// Se a pessoa der enter e não ter digitado 4 digitos apaga todo o PIN digitado
+               printf(lcd_putc,"\fDeve conter ao\nmenos 4 digitos"); //Mensagem de alerta que some em 1 segundo
+               delay_ms(1000);
+               usuarioDigito = 10; //Volta a posição do dígito para 10 (byte onde começa PIN)
+               apagaPINnaRAM(); //Apaga o que já estava armazenado
+               mensagemPIN(tipo);
+            }
+         break;
+         case '*':   //Esse caso apaga o vetor PIN, apaga os asteriscos digitados na tela e retorna ao dígito 0 do pin
+              usuarioDigito = 10; //Volta a posição do dígito para 10 (byte onde começa PIN)/
+              apagaPINnaRAM(); //Apaga o que já estava armazenado
+              mensagemPIN(tipo);
+         break;
+         case '#':
+            //Nada acontece
+         break;
+         default: //Esse caso DEFAULT grava o número digitado no vetor pin
+            if(usuarioDigito < 20){  //limita a quantidade de dígitos do pin em 10 [vai de 0 à 9]
+               if(tipo == 1){ 
+                  printf(lcd_putc,"%c",tecla); //Mostra o PIN caso seja Cadastro
+               }
+               else{
+                  printf(lcd_putc,"*"); //Oculta o PIN caso seja Login
+               }
+               usuario[usuarioDigito] = tecla; //O atual dígito do pin recebe o número digitado
+               usuarioDigito++; //avança o dígito do pin
+            }
+         break;
+      }
+   }
+}
+////////////////// MENSAGEM ID - EXIBE A MENSAGEM QUE DEVE APARECER NA TELA DE ARMAZENAMENDO DO ID NA RAM
+void mensagemID(int tipo){ /// (3) para Apagar, (2) para Menu, (1) para cadastro e (0) para login
+   if(tipo == 0){
+      printf(lcd_putc,"\fDigite um ID:\n");
+   }
+   else if(tipo == 1){
+      printf(lcd_putc,"\fCadastre um ID:\n");
+   }
+   else if(tipo == 2){
+      printf(lcd_putc,"\fID do ADM:\n");
+   }
+   else if(tipo == 3){
+      printf(lcd_putc,"\fApagar o ID:\n");
+   }
+}
+////////////////// MENSAGEM PIN - EXIBE A MENSAGEM QUE DEVE APARECER NA TELA DE ARMAZENAMENDO DO PIN NA RAM
+void mensagemPIN(int tipo){ /// (2) para Menu, (1) para cadastro e (0) para login
+   if(tipo == 0){
+      printf(lcd_putc,"\fDigite um PIN:\n");
+   }
+   else if(tipo == 1){
+      printf(lcd_putc,"\fCadastre um PIN:\n");
+   }
+   else if(tipo == 2){
+      printf(lcd_putc,"\fPIN do ADM:\n");
+   }
+}
+////////////////// APAGA O ID NA RAM
+void apagaIDnaRAM(){
+   for(i = 0; i < 10; i++){ //Varre o usuario de 0 a 9 (região onde fica armazenado o ID)
+      usuario[i] = 0xFF; //Vai apagando cada byte do vetor usuario na região do ID por precaução
+   }
+}
+////////////////// APAGA O PIN NA RAM
+void apagaPINnaRAM(){
+   for(i = 10; i < 20; i++){ //Varre o usuario de 10 a 19 (região onde fica armazenado o PIN)
+      usuario[i] = 0xFF; //Vai apagando cada byte do vetor usuario na região do PIN por precaução
+   }
+}
+/////////////////// ARMAZENA CADASTRO NA EEPROM
+void armazenaCadastroNaEEPROM(){
+   printf(lcd_putc,"\fCadastrando"); //Exibe essa mensagem enquanto registra o novo usuário
+   unsigned int16 posicaoLivreEEPROM = retornaPrimeiraPosicaoLivreNaEEPROM(); //Verifica onde está o espaço vazio mais próximo, seja ele no fim ou no meio
+   unsigned int16 posicaoXnaEEPROM = retornaPosicaoDoXnaEEPROM(); //Verifica onde está o x na memória (o x indica o fim da memória utilizada)
+   for(int j = 0; j < 20; j++){
+      write_ext_eeprom(posicaoLivreEEPROM + j, usuario[j]); //Grava o vetor usuário no espaço vazio
+   }
+   if(posicaoLivreEEPROM == posicaoXnaEEPROM){ //Se a posição do espaço vazio for a mesma do X, reescreve o X no final da memória
+      write_ext_eeprom(posicaoLivreEEPROM + 20, 'x');
+   }
+   printf(lcd_putc,"\fCadastro\nefetuado"); //Apaga o Display
+   delay_ms(1000);
+}
+/////////////////// RETORNA A PRIMEIRA POSIÇÃO LIVRE NA EEPROM
+unsigned int16 retornaPrimeiraPosicaoLivreNaEEPROM(){
+   int leitura = 0;
+   i = 0;
+   leitura = read_ext_eeprom(i);
+   while(leitura != 0xFF && leitura != 'x'){ //i vai pulando entre os primeiros bytes dos slots (de 20 bytes) na EEPROM e verificando se não é igual a uma parte vazia (0xFF) ou o fim dela ('x')
+      i = i + 20;
+      leitura = read_ext_eeprom(i);
+   }
+   return i;
+}
+/////////////////// RETORNA A POSIÇÃO DO X
+unsigned int16 retornaPosicaoDoXnaEEPROM(){
+   if(read_ext_eeprom(0) == 0xFF){ //Se a memória nunca foi utilizada antes, o x deveria estar no zero
+      return 0;
+   }
+   else{ //Se a memória já foi utilizada, procura o x
+      int leitura = 0;
+      i = 0;
+      leitura = read_ext_eeprom(i);
+      while(leitura != 'x' && i < 2040){ //i vai pulando entre os primeiros bytes dos slots (de 20 bytes) na EEPROM e verificando se não é igual a uma parte vazia (0xFF) ou o fim dela ('x')
+         i = i + 20;
+         leitura = read_ext_eeprom(i);
+      }
+      return i; //Retorna onde a busca pelo x cessou
+   }
+}
+///////////////// TELA ENTRAR
+void entrar(){
+   armazenaIDnaRAM(0); //0 porque é login
+   if(apertouParaDesistir != TRUE){ //Se a pessoa apertou para sair da tela de ID não é mais necessário exibir a tela do PIN nem armazena-lo
+      armazenaPINnaRAM(0); //Executa toda a rotina para armazenar na memória RAM os caracteres do PIN digitados pelo usuário. 0 é para esconder os caracteres do PIN
+      int verifica = verificaLogin(); //Variável de mesmo nome que recebe o que a função verificaLogin retorna
+      if(verifica == 2){
+         printf(lcd_putc,"\fAdministrador\nAutorizado");
+         output_high(rele);
+         delay_ms(3000);
+         output_low(rele);
+      }
+      if(verifica == 1){
+         printf(lcd_putc,"\fAcesso\nAutorizado");
+         output_high(rele); //Ativa o relé que abre a porta
+         delay_ms(3000);
+         output_low(rele);
+      }
+      if(verifica == 0){
+         printf(lcd_putc,"\fAcesso\nNegado");
+         delay_ms(3000);
+      }
+   }
+}
+/////////////////  EXIBE O MENU
+void entrarNoMenu(){
+   printf(lcd_putc,"\fFaca login\nno menu");
+   delay_ms(1000);
+   armazenaIDnaRAM(2); //2 porque é Menu
+   if(apertouParaDesistir != TRUE){ //Se a pessoa apertou para sair da tela de ID não é mais necessário exibir a tela do PIN nem armazena-lo
+      armazenaPINnaRAM(2); //Executa toda a rotina para armazenar na memória RAM os caracteres do PIN digitados pelo usuário. 2 é para esconder os caracteres do PIN e mostrar mensagem de Menu
+      int verifica = verificaLogin(); //Variável de mesmo nome que recebe o que a função verificaLogin retorna
+      if(verifica == 2){
+         tela = 2; //Muda para a tela que exibe as Opções do Menu
+         printf(lcd_putc,"\fAcesso ao menu\nAutorizado");
+         delay_ms(1000);
+      }
+      if(verifica == 1){
+         printf(lcd_putc,"\fAcesso ao menu\nNegado");
+         delay_ms(1000);
+      }
+      if(verifica == 0){
+         printf(lcd_putc,"\fAcesso ao menu\nNegado");
+         delay_ms(1000);
+      }
+   }
+}
+////////////////// Verifica o Login e retorna 0 se for negado, 1 se for usuário comum e 2 se for ADM
+int verificaLogin(){      
+      int posicao_na_memoria = 0; //Inidica em qual posicao de usuário está na memória EEPROM
+      int usuario_match = TRUE;  //Indica se algum usuário combinou
+      int continua_a_busca = TRUE; //inidica se a busca deve continuar
+      
+      while(continua_a_busca){   //Começa a procurar na EEPROM um usuário com esse ID e PIN registrados
+         if(read_ext_eeprom(posicao_na_memoria*20) != 'x'){
+            for(int g = 0; g < 20; g++){
+               if(usuario[g] != read_ext_eeprom(g+posicao_na_memoria*20)){
+                  usuario_match = FALSE;
+               } //Fim if
+                 //Senao o usuario_mach continua TRUE :)
+            } //Fim for
+            if(usuario_match){ //Se depois de todas as comparações continuou TRUE então desabilita a flag de continuar a busca
+               continua_a_busca = FALSE;
+            }
+            else{             //Senao continua incrementando posições na memória
+               posicao_na_memoria++; //incrementa a posição na memória EEPROM (Multiplica um fator de 20 que avança os 20 bytes necessários)
+               usuario_match = TRUE; //Volta para TRUE para que possa fazer a verificação no próximo endereço de memória
+            }
+         } //Fim if de verificação do fim da memória
+         else{
+            continua_a_busca = FALSE;
+            usuario_match = FALSE;
+         } //Fim else de verificação da memória (desabilita a flag continua_a_busca porque cehgou ao fim da memória EEPROM)
+      } // fim while de busca
+      
+      if(usuario_match && (posicao_na_memoria == 0)){ //Se o login for do ADM
+         return 2;
+      }
+      else if(usuario_match && (posicao_na_memoria > 0) ){ //Se o login for de usuário comum
+         return 1;
+      }
+      else{     //Se não bater com nenhum login
+         return 0;
+      }
+}
+///////////////// Verifica se usuário já existe
+int verificaIDexistente(){
+   int posicao_na_memoria = 0; //Inidica em qual posicao de usuário está na memória EEPROM
+   int usuario_match = TRUE;  //Indica se algum usuário combinou
+   int continua_a_busca = TRUE; //inidica se a busca deve continuar
+   
+   while(continua_a_busca){   //Começa a procurar na EEPROM um usuário com esse ID e PIN registrados
+      if(read_ext_eeprom(posicao_na_memoria*20) != 'x'){
+         for(int g = 0; g < 10; g++){
+            if(usuario[g] != read_ext_eeprom(g+posicao_na_memoria*20)){
+               usuario_match = FALSE;
+            } //Fim if
+              //Senao o usuario_mach continua TRUE :)
+         } //Fim for
+         if(usuario_match){ //Se depois de todas as comparações continuou TRUE então desabilita a flag de continuar a busca
+            continua_a_busca = FALSE;
+         }
+         else{             //Senao continua incrementando posições na memória
+            posicao_na_memoria++; //incrementa a posição na memória EEPROM (Multiplica um fator de 20 que avança os 20 bytes necessários)
+            usuario_match = TRUE; //Volta para TRUE para que possa fazer a verificação no próximo endereço de memória
+         }
+      } //Fim if de verificação do fim da memória
+      else{
+         continua_a_busca = FALSE;
+         usuario_match = FALSE;
+      } //Fim else de verificação da memória (desabilita a flag continua_a_busca porque cehgou ao fim da memória EEPROM)
+   } // fim while de busca
+   
+   if(usuario_match){ //Se o login for do ADM
+      return 1;
+   }
+   else{     //Se não bater com nenhum login
+      return 0;
+   }
+}
+///////////////// VERIFICA POSIÇÃO DO ID NA MEMÓRIA
+int16 verificaIDposicao(){
+   int posicao_na_memoria = 0; //Inidica em qual posicao de usuário está na memória EEPROM
+   int usuario_match = TRUE;  //Indica se algum usuário combinou
+   int continua_a_busca = TRUE; //inidica se a busca deve continuar
+   
+   while(continua_a_busca){   //Começa a procurar na EEPROM um usuário com esse ID e PIN registrados
+      if(read_ext_eeprom(posicao_na_memoria*20) != 'x'){
+         for(int g = 0; g < 10; g++){
+            if(usuario[g] != read_ext_eeprom(g+posicao_na_memoria*20)){
+               usuario_match = FALSE;
+            } //Fim if
+              //Senao o usuario_mach continua TRUE :)
+         } //Fim for
+         if(usuario_match){ //Se depois de todas as comparações continuou TRUE então desabilita a flag de continuar a busca
+            continua_a_busca = FALSE;
+         }
+         else{             //Senao continua incrementando posições na memória
+            posicao_na_memoria++; //incrementa a posição na memória EEPROM (Multiplica um fator de 20 que avança os 20 bytes necessários)
+            usuario_match = TRUE; //Volta para TRUE para que possa fazer a verificação no próximo endereço de memória
+         }
+      } //Fim if de verificação do fim da memória
+      else{
+         continua_a_busca = FALSE;
+         usuario_match = FALSE;
+      } //Fim else de verificação da memória (desabilita a flag continua_a_busca porque cehgou ao fim da memória EEPROM)
+   } // fim while de busca
+   
+   if(usuario_match){ //Se o login for do ADM
+      return posicao_na_memoria;
+   }
+   else{     //Se não bater com nenhum login
+      return -1;
+   }
+}
+////////////////// EXIBE AS OPÇÕES DO MENU
+void opcoesDoMenu(){
+   int continua = TRUE;
+   int opcao = 0;
+   tela = opcao + 3; //Zera a tela para não dar BUG nas somas;
+   imprimeOpcaoDoMenu(opcao);
+   while(continua){
+      tecla = lastchar();
+      switch(tecla){
+         case '6':
+            if(opcao == 5){ //Caso tenha chegado ao FIM (4) das opções, volte à primeira opção
+               opcao = 0;
+            }
+            else{
+               opcao++; //Caso ainda não tenha chegado na última opção, continue incrementando
+            }
+            tela = opcao + 3; //Pois o índice das telas estão avançados em 3 tirando a tela entrar() e a tela menu()
+            imprimeOpcaoDoMenu(opcao);
+         break;
+         case '5': //MESMO CASO DO D
+            continua = FALSE; //Sai do loop para exibição das opções e pula para a tela escolhida;
+         break;
+         case 'D': //MESMO CASO DO 5
+            continua = FALSE; //Sai do loop para exibição das opções e pula para a tela escolhida;
+         break;
+         case 'C':
+            continua = FALSE;
+            tela = 0;
+         break;
+         case '4':
+            if(opcao == 0){  //Caso tenha chegado ao INICIO (0) das opções, volte à última opção
+               opcao = 5;
+            }
+            else{
+               opcao--; //Caso não tenha chegado a PRIMEIRA opção (0), continue decrementando
+            }
+            tela = opcao + 3; //Pois o índice das telas estão avançados em 3 tirando a tela entrar() e a tela menu()
+            imprimeOpcaoDoMenu(opcao);
+         break;
+      } //Fim switch
+      // Logo apó o Switch é necessário imprimir a atual opção do menu na tela;
+   }
+}
+///////////////
+void imprimeOpcaoDoMenu(int opcao){
+   printf(lcd_putc,"\fMenu\n<[%d/6] %s",opcao+1,opcoesMenu[opcao]);
+   lcd_gotoxy(16,1);
+   lcd_putc('>');
+}
+////////// TELA DE BUSCA
+void busca(){
+   int continua = TRUE;
+   unsigned int16 posicao = 0;
+   unsigned int16 posicaodoX = retornaPosicaoDoXnaEEPROM();
+   
+   printf(lcd_putc,"\fUsuarios:\n<  "); //////////////////Mostra o primeiro cadastro
+   escreveUsuario(posicao);
+   printf(lcd_putc,"  >");
+   
+   while(continua){
+      tecla = lastChar();
+      switch(tecla){
+         case '6':
+            if(read_ext_eeprom(posicao + 20) == 'x'){ //Só incrementa se não estiver no final da memória
+               posicao = 0;
+            }
+            else{ //Caso contrário volta ao fim
+               posicao = posicao + 20;
+            }
+            printf(lcd_putc,"\fUsuarios:\n<  ");
+            escreveUsuario(posicao); //Escreve o atual usuário na tela
+            printf(lcd_putc,"  >");
+         break;
+         case 'C':
+            continua = FALSE; //Sai do loop
+            tela = 2; //Vai para opcoesDoMenu();
+         case '4':
+            if(posicao > 0){
+               posicao = posicao - 20;
+            }
+            else{
+               posicao = posicaodoX - 20;
+            }
+            printf(lcd_putc,"\fUsuarios:\n<  ");
+            escreveUsuario(posicao); //Escreve o atual usuário na tela
+            printf(lcd_putc,"  >");
+         break;
+      }
+   }
+}
+////////// Função para apagar usuário
+Void apagar(){
+   int16 posicao = 0;
+   unsigned int16 posicaoDoX = retornaPosicaoDoXnaEEPROM();
+   armazenaIDnaRAM(3); //3 pois vai apagar um usuário e a mensagem será diferente
+   if(apertouParaDesistir != TRUE){
+      printf(lcd_putc,"\fAguarde...");
+      posicao = verificaIDposicao();
+      if(posicao != -1 && posicao != 0){ //SE O ID EXISTIR E NÃO FOR O ADM, ARRASTAR O ÚLTIMO PARA CIMA DELE E APAGAR O ÚLTIMO
+         printf(lcd_putc,"\fApagando...");
+         for(i = 0; i < 20; i++){
+            write_ext_eeprom(posicao*20 + i, read_ext_eeprom(posicaoDoX - 20 + i)); //Escreve o byte do último no byte correspondente do usuário apagado
+            write_ext_eeprom(posicaoDoX - 20 + i, 0xFF); //Apaga o byte do último usuário na memória
+         }
+         write_ext_eeprom(posicaoDoX - 20, 'x'); //Remarca o novo x
+      }
+      else if(posicao != -1 && posicao == 0){ //SE O ID EXISTIR E FOR O ADM, APENAS APAGA-LO, NÃO ARRASTAR NADA PARA CIMA DELE
+         for(i = 0; i < 20; i++){
+            write_ext_eeprom(i, 0xFF); //vai apagando o ADM da memória
+         }
+         verificaPrimeiroCadastro();
+      }
+      else{
+         printf(lcd_putc,"\fUsuario\ninexistente");
+         delay_ms(1000);
+      }
+   }
+   tela = 2; //Volta para opções do MENU
+}
+///////////////////////// Função para apagar tudo
+void formatar(){
+   printf(lcd_putc,"\fCerteza?\nD-Sim C-Nao");
+   tecla = lastchar();
+   switch(tecla){
+      case 'D':
+         printf(lcd_putc,"\fAguarde...\nPode demorar");
+         for(i = 0; i <= 2000; i++){
+            write_ext_eeprom(i, 0xFF);
+         }
+         verificaPrimeiroCadastro();
+      break;
+      case 'C':
+         tela = 2; //Volta as opções do Menu
+      break;
+   }
+}
+//////////////////////// Função que mostra sobre o dispositivo, firmware, desenvolveros, etc...
+void sobre(){
+   printf(lcd_putc,"\fDesenvolvido\npor");
+   delay_ms(1000);
+   printf(lcd_putc,"\fMateus Feltrin");
+   delay_ms(1000);
+   printf(lcd_putc,"\fDaniela Maionchi");
+   delay_ms(1000);
+   printf(lcd_putc,"\fe Thaina Moraes");
+   delay_ms(1000);
+   printf(lcd_putc,"\fVersao 1.5c");
+   delay_ms(1000);
+   printf(lcd_putc,"\fDisciplina de mi\ncrocontroladores");
+   delay_ms(1000);
+   printf(lcd_putc,"\fIFMT\nCampus Cuiaba");
+   delay_ms(1000);
+   tela = 2; //Volta para a tela de opções do Menu
+}
+/////////////////////// Imprime o usuário em uma determinada posição da memória (é utilizada na busca)
+void escreveUsuario(unsigned int16 posicao){
+   for(i = 0; i < 10; i++){ //Imprime os 10 primeiros valores na memória a partir da 'posicao'
+      int c = read_ext_eeprom(posicao+i);
+      if(c != 0xFF){
+         printf(lcd_putc,"%c",c);
+      }
+      else{
+         printf(lcd_putc,"-");
+      }
+   }
+}
+//////////////
+void verificaPrimeiroCadastro(){
+   if(read_ext_eeprom(0) == 0xFF){ //////Verifica se o primeiro slot da memória é NULL
+      primeiroCadastro = TRUE; //FLAG que não deixa fugir do primeiro cadastro
+      while(primeiroCadastro){ //Enquanto for o primeiro Cadastro, insiste que o usuário faça-o
+         printf(lcd_putc,"\fE necessario\ncadastrar um ADM"); //Avisa que é necessário cadastrar o primeiro usuário que é o ADM
+         delay_ms(1000); //Exibe a mensagem por 2 segundos
+         cadastro(); //Chama a tela de cadastro;
+         apertouParaDesistir = FALSE; //Reinicia a FLAG que indica que o usuário apertou para desistir em cadastro()
+      }
+   }
+}
+////////////// Apaga o ADM na memória
+void apagaADM(){
+   for(i = 0; i < 20; i++){
+      write_ext_eeprom(i, 0xFF);
+   }
+}
